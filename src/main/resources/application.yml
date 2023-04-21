@@ -59,3 +59,9 @@ logging:
     com.example.emos.wx.db.dao: warn
   pattern:
      console: "%d{HH:mm:ss}  %-5level  %msg%n"
+#secret秘钥 expire过期时间 cache-expire缓存过期时间
+emos:
+  jwt:
+    secret: abc123456
+    expire: 5
+    cache-expire: 10
