@@ -21,7 +21,7 @@ public class JwtUtil {
 
     @Value("${emos.jwt.expire}")
     private String expire;
-
+//创建令牌的方法
     public String createToken(int userId){
         Date date = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR,5);
 //        这里不能直接new对象，而是调用静态工厂方法去创建对象
@@ -31,7 +31,7 @@ public class JwtUtil {
         String token = builder.withClaim("userId",userId).withExpiresAt(date).sign(algorithm);
         return token;
     }
-
+    //创建令牌的方法
     public int getUserId(String token){
 //        对令牌字符串进行解码
         DecodedJWT jwt = JWT.decode(token);
