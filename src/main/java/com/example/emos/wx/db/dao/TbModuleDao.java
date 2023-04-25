@@ -2,7 +2,7 @@ package com.example.emos.wx.db.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
+//@Mapper
 public interface TbModuleDao {
 
 }

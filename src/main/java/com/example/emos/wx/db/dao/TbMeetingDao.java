@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Mapper
+//@Mapper
 public interface TbMeetingDao {
 
 }

@@ -45,7 +45,6 @@ spring:
       authentication-database: admin
       username: admin
       password: abc123456
-
 mybatis:
   mapper-locations: classpath*:mapper/*.xml
   type-aliases-package: com.example.emos.wx.db.pojo
@@ -65,3 +64,7 @@ emos:
     secret: abc123456
     expire: 5
     cache-expire: 10
+
+wx:
+  app-id: wxba889b1c51863457
+  app-secret: b155e4128225b8c32bbc540dd04cee30
