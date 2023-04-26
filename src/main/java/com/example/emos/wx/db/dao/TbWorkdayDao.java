@@ -8,4 +8,6 @@ import java.util.HashMap;
 //@Mapper
 public interface TbWorkdayDao {
 
+    public Integer searchTodayIsWorkday();
+
 }
