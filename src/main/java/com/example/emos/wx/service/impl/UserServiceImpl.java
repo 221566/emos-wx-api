@@ -5,6 +5,7 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.emos.wx.db.dao.TbUserDao;
+import com.example.emos.wx.db.pojo.TbUser;
 import com.example.emos.wx.exception.EmosException;
 import com.example.emos.wx.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Value("${wx.app-secret}")
     private String appSecret;
 
-    @Autowired
+    @Resource
     private TbUserDao userDao;
 
     private String getOpenId(String code) {
@@ -92,5 +93,11 @@ public class UserServiceImpl implements UserService {
             throw new EmosException("账户不存在");
         }
         return id;
+    }
+
+    @Override
+    public TbUser searchById(int userId) {
+        TbUser tbUser = userDao.searchById(userId);
+        return tbUser;
     }
 }
