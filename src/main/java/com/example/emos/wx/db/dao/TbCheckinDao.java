@@ -10,4 +10,7 @@ import java.util.HashMap;
 public interface TbCheckinDao {
 
     public Integer haveCheckin(HashMap map);
+
+    public void insert(TbCheckin checkin);
+
 }

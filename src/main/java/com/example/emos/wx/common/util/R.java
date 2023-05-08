@@ -17,6 +17,9 @@ public class R extends HashMap<String,Object> {
     public static R ok(){
         return new R();
     }
+    public static R ok(int msg){
+        return new R();
+    }
     public static R ok(String msg){
         R r = new R();
         r.put("msg",msg);
@@ -32,6 +35,10 @@ public class R extends HashMap<String,Object> {
         r.put("code",code);
         r.put("msg",msg);
         return r;
+    }
+    public interface Code{
+        int SUCCESS = 0;
+        int ERROR = 1;
     }
     public static R error(String msg){
         return error(HttpStatus.SC_INTERNAL_SERVER_ERROR,msg);
