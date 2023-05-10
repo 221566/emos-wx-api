@@ -11,4 +11,6 @@ public interface TbHolidaysDao {
 
     public Integer searchTodayIsHolidays();
 
+    public ArrayList<String> searchHolidaysInRange(HashMap param);
+
 }

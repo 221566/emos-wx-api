@@ -10,4 +10,6 @@ public interface TbWorkdayDao {
 
     public Integer searchTodayIsWorkday();
 
+    public ArrayList<String> searchWorkdayInRange(HashMap param);
+
 }

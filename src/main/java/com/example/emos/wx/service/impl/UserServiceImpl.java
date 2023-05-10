@@ -100,4 +100,16 @@ public class UserServiceImpl implements UserService {
         TbUser tbUser = userDao.searchById(userId);
         return tbUser;
     }
+
+    @Override
+    public String searchUserHiredate(int userId) {
+        String hiredate=userDao.searchUserHiredate(userId);
+        return hiredate;
+    }
+
+    @Override
+    public HashMap searchUserSummary(int userId) {
+        HashMap map=userDao.searchUserSummary(userId);
+        return map;
+    }
 }

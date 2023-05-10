@@ -12,5 +12,7 @@ public interface TbCheckinDao {
     public Integer haveCheckin(HashMap map);
 
     public void insert(TbCheckin checkin);
-
+    public HashMap searchTodayCheckin(int userId);
+    public long searchCheckinDays(int userId);
+    public ArrayList<HashMap> searchWeekCheckin(HashMap param);
 }
