@@ -1,5 +1,6 @@
 package com.example.emos.wx.util;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -7,9 +8,7 @@ import com.example.emos.wx.common.util.R;
 import org.springframework.util.StringUtils;
 
 import javax.net.ssl.SSLException;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -124,17 +123,20 @@ public class FaceHelper {
      */
     public static R faceDetect(String imgBase64) {
         HashMap<String, String> map = new HashMap<>();
+        HashMap<String, byte[]> byteMap = new HashMap<>();
         map.put("api_key", API_KEY); // 调用此API的API Key
         map.put("api_secret", API_SECRET); // 调用此API的API Secret
         map.put("return_landmark", "1"); // 是否检测并返回人脸关键点，1 表示返回 83 个人脸关键点
         map.put("return_attributes", "gender,age,smiling,headpose,facequality,blur,eyestatus,emotion,ethnicity,beauty,mouthstatus,eyegaze,skinstatus"); // 是否检测并返回根据人脸特征判断出的年龄、性别、情绪等属性
         map.put("image_base64", imgBase64);
-
+//        File file = new File(imgBase64);
+        byte[] buff = getBytesFromFile(FileUtil.file(imgBase64));
+        byteMap.put("image_file", buff);
         R dataResp = new R();
 
         String respString = "";
         try {
-            byte[] respByte = post(FACE_API_DETECT, map, null);
+            byte[] respByte = post(FACE_API_DETECT, map, byteMap);
 
             respString = new String(respByte);
             getFaceId(respString);
@@ -180,14 +182,15 @@ public class FaceHelper {
      * 人脸对比
      * @return
      */
-    public static R faceCompare(String faceToken1, String faceToken2) {
+    public static String faceCompare(String faceToken1, String faceToken2) {
 
         HashMap<String, String> map = new HashMap<>();
+        HashMap<String, byte[]> byteMap = new HashMap<>();
         map.put("api_key", API_KEY);
         map.put("api_secret", API_SECRET);
         map.put("face_token1", faceToken1); // 用于对比的第一张 base64 编码图片
         map.put("face_token2", faceToken2); // 用于对比的第二张 base64 编码图片
-        R dataResp = new R();
+        String msg = null;
 
         String respString = "";
         try {
@@ -203,7 +206,7 @@ public class FaceHelper {
 
             JSONObject json = JSON.parseObject(respString);
             if (validateFaceConfidence(json)) {
-                R.ok(R.Code.SUCCESS);
+                msg ="SUCCESS";
                 R.ok("刷脸对比成功");
                 R.ok(json);
             } else {
@@ -213,7 +216,7 @@ public class FaceHelper {
             }
         }
 
-        return dataResp;
+        return msg;
     }
 
     /**
@@ -251,7 +254,24 @@ public class FaceHelper {
     }
 
 
-
+    public static byte[] getBytesFromFile(File f) {
+        if (f == null) {
+            return null;
+        }
+        try {
+            FileInputStream stream = new FileInputStream(f);
+            ByteArrayOutputStream out = new ByteArrayOutputStream(1000);
+            byte[] b = new byte[1000];
+            int n;
+            while ((n = stream.read(b)) != -1)
+                out.write(b, 0, n);
+            stream.close();
+            out.close();
+            return out.toByteArray();
+        } catch (IOException e) {
+        }
+        return null;
+    }
 
     public static String getFaceId(String respString){
         JSONObject jsonObject=JSONObject.parseObject (respString);

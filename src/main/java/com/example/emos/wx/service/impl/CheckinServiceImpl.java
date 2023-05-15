@@ -9,12 +9,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import com.example.emos.wx.common.util.R;
 import com.example.emos.wx.config.SystemConstants;
 import com.example.emos.wx.db.dao.*;
 import com.example.emos.wx.db.pojo.TbCheckin;
 import com.example.emos.wx.db.pojo.TbFaceModel;
 import com.example.emos.wx.exception.EmosException;
 import com.example.emos.wx.service.CheckinService;
+import com.example.emos.wx.util.FaceHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -105,38 +107,31 @@ public class CheckinServiceImpl implements CheckinService {
             }
         }
     }
-
     @Override
     public void checkin(HashMap param) {
-        Date d1 = DateUtil.date();
-        Date d2 = DateUtil.parse(DateUtil.today()+" "+constants.attendanceStartTime);
-        Date d3 = DateUtil.parse(DateUtil.today()+" "+constants.attendanceEndTime);
-        int status = 1;
-        if (d1.compareTo(d2) <= 0){
-            status = 1;
-        }else if (d1.compareTo(d2)>0 && d1.compareTo(d3) < 0){
-            status = 2;
+        Date d1=DateUtil.date();
+        Date d2=DateUtil.parse(DateUtil.today()+" "+constants.attendanceTime);
+        Date d3=DateUtil.parse(DateUtil.today()+" "+constants.attendanceEndTime);
+        int status=1;
+        if(d1.compareTo(d2)<=0){
+            status=1;
         }
-        int userId =(Integer) param.get("userId");
-        String faceModel = faceModelDao.searchFaceModel(userId);
-        if (faceModel==null){
+        else if(d1.compareTo(d2)>0&&d1.compareTo(d3)<0){
+            status=2;
+        }
+        else{
+            throw new EmosException("超出考勤时间段，无法考勤");
+        }
+        int userId= (Integer) param.get("userId");
+        String faceModel=faceModelDao.searchFaceModel(userId);
+        if(faceModel==null){
             throw new EmosException("不存在人脸模型");
-        }else {
-            String path =(String) param.get("path");
-            HttpRequest request = HttpUtil.createPost(checkinUrl);
-            request.form("photo", FileUtil.file(path),"targetModel",faceModel);
-            request.form("code",code);
-            HttpResponse response = request.execute();
-            if (response.getStatus() != 200){
-                log.error("人脸识别服务异常");
-                throw new EmosException("人脸识别服务异常");
-            }
-            String body = response.body();
-            if ("无法识别出人脸".equals(body) || "照片中存在多张人脸".equals(body)){
-                throw new EmosException(body);
-            }else if ("False".equals(body)){
-                throw new EmosException("签到无效，非本人签到");
-            }else if ("icode不正确".equals(body)){
+        }
+        else{
+            String path=(String)param.get("path");
+             FaceHelper.faceDetect(path);
+            String s = FaceHelper.faceCompare(FaceHelper.faceId, faceModel);
+            if(s.equals("SUCCESS")){
                 //查询疫情风险等级
                 int risk=1;
                 String city= (String) param.get("city");
@@ -148,8 +143,8 @@ public class CheckinServiceImpl implements CheckinService {
                     String code=cityDao.searchCode(city);
                     try{
                         String url = "http://m." + code + ".bendibao.com/news/yqdengji/?qu=" + district;
-                        Document document= Jsoup.connect(url).get();
-                        Elements elements=document.getElementsByClass("cls17");
+                        Document document=Jsoup.connect(url).get();
+                        Elements elements=document.getElementsByClass("list-content");
                         if(elements.size()>0){
                             Element element=elements.get(0);
                             String result=element.select("p:last-child").text();
@@ -195,20 +190,11 @@ public class CheckinServiceImpl implements CheckinService {
 
     @Override
     public void createFaceModel(int userId, String path) {
-        HttpRequest request=HttpUtil.createPost(createFaceModelUrl);
-        request.form("photo",FileUtil.file(path));
-        request.form("code",code);
-        HttpResponse response=request.execute();
-        String body=response.body();
-        if("无法识别出人脸".equals(body)||"照片中存在多张人脸".equals(body)){
-            throw new EmosException(body);
-        }
-        else{
+            FaceHelper.faceDetect(path);
             TbFaceModel entity=new TbFaceModel();
             entity.setUserId(userId);
-            entity.setFaceModel(body);
+            entity.setFaceModel(FaceHelper.faceId);
             faceModelDao.insert(entity);
-        }
     }
 
     @Override
