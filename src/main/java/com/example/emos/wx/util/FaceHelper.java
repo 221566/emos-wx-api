@@ -210,7 +210,7 @@ public class FaceHelper {
                 R.ok("刷脸对比成功");
                 R.ok(json);
             } else {
-                R.ok(R.Code.ERROR);
+                msg = "ERROR";
                 R.error("刷脸失败，不是同一个人");
                 R.ok(json);
             }
