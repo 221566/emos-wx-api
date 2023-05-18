@@ -90,10 +90,11 @@ public class MessageTask {
                     entity.setReadFlag(false);
                     entity.setLastFlag(true);
                     messageService.insertRef(entity);
-//                    返回应答的第一个参数
+//                    返回ACK应答的第一个参数
                     long deliveryTag = response.getEnvelope().getDeliveryTag();
 //                    返回ACK应答，表示消费者成功接收到消息
                     channel.basicAck(deliveryTag, false);
+//                    接收的消息增加
                     i++;
                 }
                 else {

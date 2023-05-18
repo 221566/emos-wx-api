@@ -14,12 +14,14 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 @Repository
 public class MessageDao {
+    @Resource
     private MongoTemplate mongoTemplate;
 
     public String insert(MessageEntity entity){

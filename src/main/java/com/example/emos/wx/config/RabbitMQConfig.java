@@ -9,7 +9,7 @@ public class RabbitMQConfig {
     @Bean
     public ConnectionFactory getFactory(){
         ConnectionFactory factory=new ConnectionFactory();
-        factory.setHost("192.168.1.7");
+        factory.setHost("192.168.1.5");
         factory.setPort(5672);
         return factory;
     }
